@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Trending hash tags</title>
+
+  <style>
+    body {
+      text-align: center;
+    }
+
+    svg {
+      position: absolute;
+      top: 50%;
+      bottom: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    text {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 20px;
+      fill: #fff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="chart"></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
+  <script type="text/javascript">
+    const diameter = window.innerHeight - 200;
+
+    const svg = d3.select('#chart')
+      .append('svg')
+      .attr('width', diameter)
+      .attr('height', diameter);
+
+    const pack = d3.pack()
+      .size([diameter, diameter])
+      .padding(3); // padding between adjacent circles
+
+    function drawBubbles(data) {
+      const t = d3.transition().duration(750);
+      const hierarchy = d3
+        .hierarchy({ children: data })
+        .sum(d => d.count);
+
+      // Join
+      const circle = svg
+        .selectAll('circle')
+        .data(pack(hierarchy).leaves(), d => d.data.hashtag);
+      const text = svg
+        .selectAll('text')
+        .data(pack(hierarchy).leaves(), d => d.data.hashtag);
+
+      // exit
+      circle.exit()
+        .transition(t)
+        .attr('r', d => 1e-6)
+        .style('opacity', 0)
+        .remove();
+      text.exit()
+        .transition(t)
+        .style('opacity', 0)
+        .remove();
+
+      // update
+      circle
+        .transition(t)
+        .attr('r', d => d.r)
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y);
+      text
+        .transition(t)
+        .attr('x', d => d.x)
+        .attr('y', d => d.y);
+
+      // enter
+      circle.enter().append('circle')
+        .attr('r', d => 1e-6)
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y)
+        .attr('fill', () => getRandomColor())
+        .style('opacity', 0)
+        .transition(t)
+        .style('opacity', 1)
+        .attr('r', d => d.r);
+      text.enter().append('text')
+        .attr('opacity', 1e-6)
+        .attr('x', d => d.x)
+        .attr('y', d => d.y)
+        .text(d => d.data.hashtag)
+        .transition(t)
+        .attr('opacity', 1)
+        .attr('text-anchor', 'middle');
+    }
+
+    function getRandomColor() {
+      const letters = '02468'.split('');
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * letters.length)];
+      }
+      return color;
+    }
+
+    $(document).ready(function () {
+      var socket = io();
+
+      socket.on('message', function (data) {
+        const json = Object.keys(data).map(key =>
+          ({ hashtag: key, count: data[key] })
+        );
+        drawBubbles(json);
+      });
+    });
+  </script>
+</body>
+
+</html>
