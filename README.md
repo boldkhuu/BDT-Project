@@ -28,6 +28,14 @@ Built with: Spark Streaming, Kafka, Spark SQL, Javascript
 python kafka/twitter.py
 ```
 
+#### Start Node server
+```sh
+node node/server.js
+```
+
+#### Show the graph
+Go to http://localhost:3001
+
 ## Project 2 - Basketball players dataset querying
 
 #### Run Spark SQL
