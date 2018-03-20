@@ -4,6 +4,9 @@
 # starting kafka server
 /usr/local/kafka/bin/kafka-server-start.sh /usr/local/kafka/config/server.properties
 
+# starting hadoop dfs
+/usr/local/hadoop/sbin/start-dfs.sh
+
 # list kafka topics
 /usr/local/kafka/bin/kafka-topics.sh --list --zookeeper localhost:2181
 
