@@ -1,6 +1,3 @@
-
-# Created by https://www.gitignore.io/api/node,python
-
 ### Node ###
 # Logs
 logs
@@ -161,8 +158,10 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+.DS_Store
 
-# End of https://www.gitignore.io/api/node,python
-
-# spark checkpoint dir
+# spark
 checkpoint
+spark-warehouse
+metastore_db
+derby.log
