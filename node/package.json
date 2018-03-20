@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "express": "^4.16.3",
-    "http": "^0.0.0",
     "kafka-node": "^2.4.1",
     "socket.io": "^2.0.4"
   }
